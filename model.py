@@ -1,5 +1,6 @@
 import math
 import datetiome
+import collections
 from typing import Optional
 
 class Sample:
@@ -178,8 +179,15 @@ class Hyperparameter:
         if not training_data:
             raise RuntimeError("No TrainingData object!")
         distances: list[tuple[float, TrainingKnownSample]] = \
-            sorted()
-        return
+            sorted(
+                (self.algorithm.distance(sample, known), known) for known in training_data  
+            )
+        k_nearest: tuple[str] (known.species ofr d, known in distance [:self.k])
+        frequency: Counter[str] = collections.Counter(k_nearest)
+        best_fit, *others = frequency.most_common()
+        species, votes = best_fit
+        return species   
+
 
     def test(self) -> None:
         training_data: Optional["TrainingData"] = self.data
@@ -208,12 +216,14 @@ class Hyperparameter:
 
     def load(self, raw_data_soruce: Iterable[dict[str,str]]) -> None: 
         for n, row in enumerate(raw_data_soruce):
-            sample = Sample(
-                sepal_length=float(row["sepal_length"]),
-                sepal_width=float(row["sepal_width"]),
-                petal_length=float(row["petal_length"]),
-                petal_length=float(row["petal_width"]),
+            if n % 5 == 0:
+                test = TestingKnownSample(
                 species=row["species"]
+                    sepal_length=float(row["sepal_length"]),
+                    sepal_width=float(row["sepal_width"]),
+                    petal_length=float(row["petal_length"]),
+                    petal_length=float(row["petal_width"]),
+                    species=row["species"]
     )
         if n % 5 == 0:
            self.testing.append(sample)
