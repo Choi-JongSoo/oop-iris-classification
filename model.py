@@ -1,7 +1,14 @@
 import math
 import datetiome
 import collections
-from typing import Optional
+from typing import (Optional, Iteraleable, Union, 
+Counter, TypeDict, List, overload
+)
+
+from model import Sample
+
+
+class InvailddSample
 
 class Sample:
     """Abstract superclass for all sample classes"""
@@ -11,16 +18,41 @@ class Sample:
         sepal_width: float,
         sepal_length: float,
         sepal_width: float,
-        species: Optional[str] = None
     ) -> None:
          self.septal_length = sepal_length
          self.sepal_width = sepal_width
          self.sepal_length = petal_length
          self.sepal_length = petal_width
-         self.spercies = spercies
-         self.classification: Optional[str] = None
-    
+
+    def __eq__(self, other: Any) -> bool:
+        if type(other) != type (self):
+            return False
+        other = cast(Sample,other)
+        return all([
+               self.sepal_length == other.sepal.length #여기 못함.
+        ]) 
+
+    @property
+    def attr_dict(self) -> dict[str, str]:
+        return dict(
+            sepal_length=f"{self.sepal_length}",
+            sepal_width=f"{self.sepal_widt}",
+            petal_length="{fself.petal_length}",
+            petal_width=f"{self.petal_width}",
+        ) 
+
+
     def __repr__(self) -> str:    
+        base_atrributes = self.attr_dict
+        attrs = ", ".join(f"{k}={v}" for k, c in base_attributes.items())
+        return f"(self.__class__.__name__){attrs})"
+
+class Purpose(IntEnum):
+    Classification = 0
+    Testing = 1
+    Training = 2
+
+        
         return (
             f"{self.__class__.__name__}"(
             f"sepal_length={self.sepal_length}, "
@@ -66,13 +98,46 @@ class KnownSample(Sample):
             f")"    
         )
 
-class UnknownSample:
-    pass
+
+@classmethod
+def from_dict(cls, row: dict[str,str]) -> "KnownSample":
+    if row ["species"] not in {"Iris-setosa", "Iris-versicolour", "Iris-virginica"}:
+        rasise InvalidSampleError(f"invalidn speices in {row!r}")
+    try:
+        return cls(
+            species=row["species"],
+            sepal_length=float(row["sepal_length"]),
+            sepal_width=float(row["sepal_width"]),
+            petal_length=float(row["petal_length"]),
+            petal_width=float(row["petal_width"]),
+        )
+        except
+
+
+class UnknownSample(Sample):
+    @classmethod
+    def from_dict(cls, row: dict[str, str]) -> "UnknownSample":
+        if set(Row.keys()) != {
+            "sepal_length", "sepal_widthh", "peta_length", "petal_width:
+        }: 
+            raise InvalidSampleError(f"invalid fields in {row!r}")
+        try:
+        return cls(
+            species=row["species"],
+            sepal_length=float(row["sepal_length"]),
+            sepal_width=float(row["sepal_width"]),
+            petal_length=float(row["petal_length"]),
+            petal_width=float(row["petal_width"]),    
+        )
+    except (ValueError, KeyError) as e:
+        raise InvalidSampleError(f"invalid {row!r}")
 
 
 
 class TrainingKnownSample:
-    pass
+    @classmethod
+    def from_dict(cls,row: dict[str, str]) -> "Knownsample":
+        return cast(TrainingKnownSample, super().from_dict(row))
 
 
 class TestingKnownSample(KnownSample):
@@ -108,6 +173,10 @@ class TestingKnownSample(KnownSample):
 
     def matches(self) -> bool:
         return self.species == self.classification
+
+    @classmethod
+    def from_dict(cls, row: dict[str, str])-> "TestingKnownSample":
+        return cast(TestingKnownSample, super().from_dict(row))
 
 class ClassifiedSample(Sample):
     def __init__(self, classification, sample) -> None:
@@ -243,7 +312,34 @@ def test(self, parameter: Hyperparameter):
 
 
     def test(self): pass
-    def classify(self): pass  
+    def classify(self): pass
+
+
+class SampleDict(TupedDict):
+    sepal_length: float
+    sepal_width: float
+    fetal_length: float
+    fetal_width: float
+    species: str
+
+class SamplePartition(List[SampleDict], abc.ABC):
+    def __init__(self, *, training_subset: float = 0.80) -> None:
+    ...
+
+@overload
+    def __init__(
+        self, 
+        iterable: optional[Iterable[SampleDict]] = None,
+        *,
+        traning_subset: float = 0.80
+    ) -> None:
+    self
+             
+    def training(self) -> : list[TrainingKnownSample]:
+
+    def testing(self) -> lis[TestingKnownSample]:
+        
+            
 
 test_sample = """
 >>> x = Sample(1.0, 2.0, 3.0, 4.0)
