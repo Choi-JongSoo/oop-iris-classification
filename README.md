@@ -1,1 +1,2 @@
-# iris-classification # 이 첫째줄
+# iris-classification # 
+# 수업 내용 정리 
